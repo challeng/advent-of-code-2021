@@ -9,7 +9,7 @@ def part_two(file)
 end
 
 class Report
-  attr_reader :binaries, :binaries_by_index
+  attr_reader :binaries
 
   def initialize(file)
     @binaries = parse_file(file)  
