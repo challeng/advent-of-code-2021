@@ -18,7 +18,7 @@ class Report
   def gamma
     binaries.first.length.times.map do |i|
       nums_by_index = binaries.map { |binary| binary[i] }
-      common_num(nums_by_index, tie: '1', comparer: '>')
+      occurring_num(nums_by_index, tie: '1', comparer: '>')
     end
     .join
     .to_i(2)
@@ -46,15 +46,15 @@ class Report
 
     while(filtered_binaries.length > 1) do
       nums_by_index = filtered_binaries.map { |binary| binary[i] }
-      common_num = common_num(nums_by_index, tie: tie, comparer: comparer) 
-      filtered_binaries = filtered_binaries.filter { |binary| binary[i] == common_num }
+      occurring_num = occurring_num(nums_by_index, tie: tie, comparer: comparer) 
+      filtered_binaries = filtered_binaries.filter { |binary| binary[i] == occurring_num }
       i += 1
     end
 
     filtered_binaries.first.to_i(2)
   end
 
-  def common_num(nums, tie:, comparer:)
+  def occurring_num(nums, tie:, comparer:)
     ones_count = nums.count { |num| num == '1' }
     zeroes_count = nums.length - ones_count
 
