@@ -55,15 +55,13 @@ class Line
     y_dir = start.y < finish.y ? '+' : '-'
     x = start.x
     y = start.y
-    points = [Point.new(x,y)]
 
+    yield Point.new(x,y)
     while(x != finish.x || y != finish.y) do
       x = x.send(x_dir, 1) if x != finish.x
       y = y.send(y_dir, 1) if y != finish.y
-      points << Point.new(x,y)
+      yield Point.new(x,y)
     end
-
-    points
   end
 
   def diagonal?
@@ -83,7 +81,7 @@ class Grid
   end
 
   def draw_line(line)
-    line.points.each { |p| mark_point(p.x, p.y) }
+    line.points { |p| mark_point(p.x, p.y) }
   end
 
   def mark_point(x,y)
