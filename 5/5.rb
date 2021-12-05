@@ -51,32 +51,23 @@ class Line
   end
 
   def points
-    points = []
     x_dir = start.x < finish.x ? '+' : '-'
     y_dir = start.y < finish.y ? '+' : '-'
-
     x = start.x
     y = start.y
+    points = [Point.new(x,y)]
 
-    while(x != finish.x && y != finish.y) do
-      points << Point.new(x,y)
+    while(x != finish.x || y != finish.y) do
       x = x.send(x_dir, 1) if x != finish.x
       y = y.send(y_dir, 1) if y != finish.y
+      points << Point.new(x,y)
     end
 
-    points << Point.new(x,y)
-  end
-
-  def vertical?
-    start.x == finish.x
-  end
-
-  def horizontal?
-    start.y == finish.y
+    points
   end
 
   def diagonal?
-    !vertical? && !horizontal?
+    start.y != finish.y && start.x != finish.x
   end
 end
 
@@ -88,41 +79,10 @@ class Grid
   end
 
   def count_intersections(times)
-    count = 0
-    grid.values.each do |val|
-      count += 1 if val >= times
-    end
-
-    count 
+    grid.values.count { |val| val >= times}
   end
 
   def draw_line(line)
-    if line.vertical?
-      draw_vertical(line)
-    elsif line.horizontal?
-      draw_horizontal(line)
-    else
-      draw_diagonal(line)
-    end
-  end
-
-  def draw_vertical(line)
-    range_start = [line.start.y, line.finish.y].min
-    range_end = [line.start.y, line.finish.y].max
-    (range_start..range_end).each do |n|
-      mark_point(line.start.x, n)
-    end
-  end
-
-  def draw_horizontal(line)
-    range_start = [line.start.x, line.finish.x].min
-    range_end = [line.start.x, line.finish.x].max
-    (range_start..range_end).each do |n|
-      mark_point(n, line.start.y)
-    end
-  end
-
-  def draw_diagonal(line)
     line.points.each { |p| mark_point(p.x, p.y) }
   end
 
@@ -130,13 +90,3 @@ class Grid
     grid[[x,y]] += 1
   end
 end
-
-
-  # def printit
-  #   10.times do |y|
-  #     10.times do |x|
-  #       print(grid[[x,y]])
-  #     end
-  #     puts
-  #   end
-  # end
