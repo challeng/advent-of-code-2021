@@ -2,9 +2,22 @@ day = ARGV[0]
 system("mkdir #{day}")
 File.open("#{day}/#{day}.rb", "w") do |f|     
   f.write("""def part_one(file)
+  runner = Runner.new(file)
 end
 
 def part_two(file)
+  runner = Runner.new(file)
+end
+
+class Runner
+  attr_reader :results
+
+  def initialize(file)
+    parse_file(file)
+  end
+
+  def parse_file(file)
+  end
 end
   """)
 end
