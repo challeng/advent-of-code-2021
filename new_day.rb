@@ -17,6 +17,7 @@ class Runner
   end
 
   def parse_file(file)
+    File.readlines(file, chomp: true)
   end
 end
   """)
@@ -24,6 +25,7 @@ end
 File.open("#{day}/#{day}_spec.rb", "w") do |f|     
   f.write("""require 'rspec'
 require './#{day}'
+require 'pry'
 
 RSpec.describe 'Day #{day}' do
   let(:ex_file) { 'ex_input.txt' }
