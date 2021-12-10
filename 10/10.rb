@@ -25,18 +25,15 @@ class SyntaxScorer
   end
 
   def score_autocomplete
-    incompletes = lines.map do |line|
+    line_scores = lines.map do |line|
       parser = LineParser.new(line)
       next if parser.error
-      parser.missing
-    end.compact
-
-    line_scores = incompletes.map do |line|
-      line.reduce(0) do |score, char|
+      
+      parser.missing.reduce(0) do |score, char|
         score *= 5
         score += autocomplete_score_map[char]
       end
-    end
+    end.compact
 
     line_scores.sort[line_scores.length/2]
   end
