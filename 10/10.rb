@@ -1,10 +1,11 @@
 def part_one(file)
   scorer = SyntaxScorer.new(file)
-  scorer.score_bad_lines
+  scorer.score_errors
 end
 
 def part_two(file)
-  runner = Runner.new(file)
+  scorer = SyntaxScorer.new(file)
+  scorer.score_autocomplete
 end
 
 class SyntaxScorer
@@ -14,21 +15,47 @@ class SyntaxScorer
     @lines = parse_file(file)
   end
 
-  def score_bad_lines
-    bad_lines = lines.map do |line| 
-      parsed_line = LineParser.new(line).parse
-      parsed_line if parsed_line[:expected]
+  def score_errors
+    errors = lines.map do |line| 
+      parser = LineParser.new(line)
+      parser.error if parser.error
     end.compact
 
-    bad_lines.sum { |l| score_map[l[:found]] }
+    errors.sum { |l| error_score_map[l[:found]] }
   end
 
-  def score_map
+  def score_autocomplete
+    incompletes = lines.map do |line|
+      parser = LineParser.new(line)
+      next if parser.error
+      parser.missing
+    end.compact
+
+    line_scores = incompletes.map do |line|
+      line.reduce(0) do |score, char|
+        score *= 5
+        score += autocomplete_score_map[char]
+      end
+    end
+
+    line_scores.sort[line_scores.length/2]
+  end
+
+  def error_score_map
     {
       ')' => 3,
       ']' => 57,
       '}' => 1197,
       '>' => 25137
+    }
+  end
+
+  def autocomplete_score_map
+    {
+      ')' => 1,
+      ']' => 2,
+      '}' => 3,
+      '>' => 4
     }
   end
 
@@ -38,12 +65,14 @@ class SyntaxScorer
 end
 
 class LineParser
-  attr_reader :line, :chunks, :error
+  attr_accessor :line, :chunks, :error, :missing
 
   def initialize(line)
     @line = line
     @chunks = []
     @error = nil
+    @missing = []
+    parse
   end
 
   def parse
@@ -54,12 +83,12 @@ class LineParser
         if chunk_map.key(char) == chunks.last
           chunks.pop
         else
-          return {expected: chunk_map[chunks.last], found: char}
+          self.error = {expected: chunk_map[chunks.last], found: char}
+          return
         end
       end
     end
-
-    {}
+    self.missing = chunks.reverse.map {|c| chunk_map[c]}
   end
 
   def chunk_map

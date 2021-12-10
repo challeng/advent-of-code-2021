@@ -14,12 +14,12 @@ RSpec.describe 'Day 10' do
     expect(part_one(main_file)).to eq(318099)
   end
 
-  # it 'works with the test input for part 2' do
-  #   expect(part_two(ex_file)).to eq(0)
-  # end
+  it 'works with the test input for part 2' do
+    expect(part_two(ex_file)).to eq(288957)
+  end
 
-  # it 'works with main input for part 2' do
-  #   expect(part_two(main_file)).to eq(0)
-  # end
+  it 'works with main input for part 2' do
+    expect(part_two(main_file)).to eq(2389738699)
+  end
 end
   
