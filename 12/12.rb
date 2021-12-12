@@ -18,28 +18,29 @@ class PathFinder2
 
   def find_paths
     small_caves = map.values.flatten.select do |v|
-      v.downcase == v && v != 'start' && v != 'end'}.uniq
-    end
+      v.downcase == v && v != 'start' && v != 'end'
+    end.uniq
     small_caves.each { |cave| find('start', ['start'], cave) }
-    paths.count
+    paths.uniq.count
   end
 
-  def find(node, path)
+  def find(node, path, cave)
     if node == 'end'
       paths << path
       return
     end
 
     map[node].each do |dest|
-      next if cannot_visit?(dest, path)
-      find(dest, path + [dest])
+      next if cannot_visit?(dest, path, cave)
+      find(dest, path + [dest], cave)
     end
   end
 
-  def cannot_visit?(dest, path)
+  def cannot_visit?(dest, path, cave)
     dest == 'start' ||
       path.last == 'end' ||
-      (small_cave?(dest) && path.count{|node| node == dest} == 2)
+      (small_cave?(dest) && dest != cave && path.include?(dest)) ||
+      (small_cave?(dest) && dest == cave && path.count{|node| node == dest} == 2)
   end
 
   def small_cave?(dest)
