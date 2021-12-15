@@ -1,31 +1,45 @@
 day = ARGV[0]
 system("mkdir #{day}")
-File.open("#{day}/#{day}.rb", "w") do |f|     
+File.open("#{day}/#{day}a.rb", "w") do |f|     
   f.write("""def part_one(file)
-  runner = Runner.new(file)
+  runner = RunnerA.new(file)
 end
 
-def part_two(file)
-  runner = Runner.new(file)
-end
-
-class Runner
-  attr_reader :results
-
+class RunnerA
   def initialize(file)
     parse_file(file)
   end
 
   def parse_file(file)
-    File.readlines(file, chomp: true)
+    File.readlines(file, chomp: true).each_with_index do |line, i|
+    end
+  end
+end
+  """)
+end
+File.open("#{day}/#{day}b.rb", "w") do |f|     
+  f.write("""def part_two(file)
+  runner = RunnerB.new(file)
+end
+
+class RunnerB
+  def initialize(file)
+    parse_file(file)
+  end
+
+  def parse_file(file)
+    File.readlines(file, chomp: true).each_with_index do |line, i|
+    end
   end
 end
   """)
 end
 File.open("#{day}/#{day}_spec.rb", "w") do |f|     
   f.write("""require 'rspec'
-require './#{day}'
+require './#{day}a'
+require './#{day}b'
 require 'pry'
+require 'pry-nav'
 
 RSpec.describe 'Day #{day}' do
   let(:ex_file) { 'ex_input.txt' }
