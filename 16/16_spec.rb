@@ -1,6 +1,5 @@
 require 'rspec'
 require './16a'
-require './16b'
 require 'pry'
 require 'pry-nav'
 
@@ -40,12 +39,40 @@ RSpec.describe 'Day 16' do
     expect(part_one(main_file, file: true)).to eq(0)
   end
 
-  # it 'works with the test input for part 2' do
-  #   expect(part_two(ex_file)).to eq(0)
-  # end
+  it 'works with the test input for part 2' do
+    expect(part_two('C200B40A82')).to eq(3)
+  end
 
-  # it 'works with main input for part 2' do
-  #   expect(part_two(main_file)).to eq(0)
-  # end
+  it 'works with the test input for part 2' do
+    expect(part_two('04005AC33890')).to eq(54)
+  end
+
+  it 'works with the test input for part 2' do
+    expect(part_two('880086C3E88112')).to eq(7)
+  end
+
+  it 'works with the test input for part 2' do
+    expect(part_two('CE00C43D881120')).to eq(9)
+  end
+
+  it 'works with the test input for part 2' do
+    expect(part_two('D8005AC2A8F0')).to eq(1)
+  end
+
+  it 'works with the test input for part 2' do
+    expect(part_two('F600BC2D8F')).to eq(0)
+  end
+
+  it 'works with the test input for part 2' do
+    expect(part_two('9C005AC2F8F0')).to eq(0)
+  end
+
+  it 'works with the test input for part 2' do
+    expect(part_two('9C0141080250320F1802104A08')).to eq(1)
+  end
+
+  xit 'works with main input for part 2' do
+    expect(part_two(main_file, file: true)).to eq(3408662834145)
+  end
 end
   

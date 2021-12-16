@@ -1,9 +1,14 @@
 def part_one(str, file: false)
-  converter = ConverterA.new(str, file: file)
-  converter.convert
+  converter = Converter.new(str, file: file)
+  converter.version_sum
 end
 
-class ConverterA
+def part_two(str, file: false)
+  converter = Converter.new(str, file: file)
+  converter.value
+end
+
+class Converter
   def initialize(str, file:)
     if file
       @hex = parse_file(str)
@@ -12,7 +17,13 @@ class ConverterA
     end
   end
 
-  def convert
+  def value
+    binary = @hex.map { |char| binary_map[char.to_s] }.join
+    packet = Packet.new(binary)
+    packet.value
+  end
+
+  def version_sum
     binary = @hex.map { |char| binary_map[char.to_s] }.join
     packet = Packet.new(binary)
     packet.version_sum
@@ -52,52 +63,50 @@ class Packet
     @packets = []
     @version = binary[0..2].to_i(2)  
     @type_id = binary[3..5].to_i(2)
-    @type = type(type_id)
     @length_type_id = @binary[6]
-    if @type == :operator
-      make_packets 
-    else
+    if literal?
       @literal_length = 6
       @literal = make_literal
+    else
+      make_packets 
     end
   end
 
   def make_packets
-    # length_type_id = @binary[6]
-    # binding.pry if @version == 1
     if length_type_id == '0'
-      #then the next 15 bits are a number that represents the total length in bits
-      # of the sub-packets contained by this packet.
-      sub_packet_length = @binary[7..21].to_i(2)
-      next_packets = @binary[22..(22+sub_packet_length-1)]
-      # binding.pry if @version == 5
-      # binding.pry if next_packets == nil
-      while sub_packet_length != 0 && next_packets.length != 0
-        p_length = Packet.new(next_packets).length
-        packet = Packet.new(next_packets[0..(p_length-1)])
-        @packets << packet
-
-        next_packets = next_packets[p_length..-1]
-      end
+      total_length_packets
     else
-      # next 11 bits are a number that represents the number of sub-packets
-      #immediately contained by this packet.
-      # binding.pry
-      num_sub_packets = @binary[7..17].to_i(2)
-      next_packets = @binary[18..-1]
-      while sub_packet_length != 0 && num_sub_packets != 0
-        p_length = Packet.new(next_packets).length
-        packet = Packet.new(next_packets[0..(p_length-1)])
-        @packets << packet
+      number_sub_packets
+    end
+  end
 
-        num_sub_packets -= 1
-        next_packets = next_packets[p_length..-1]
-      end
+  def number_sub_packets
+    num_sub_packets = @binary[7..17].to_i(2)
+    next_packets = @binary[18..-1]
+    while num_sub_packets != 0
+      p_length = Packet.new(next_packets).length
+      packet = Packet.new(next_packets[0..(p_length-1)])
+      @packets << packet
+
+      num_sub_packets -= 1
+      next_packets = next_packets[p_length..-1]
+    end
+  end
+
+  def total_length_packets
+    sub_packet_length = @binary[7..21].to_i(2)
+    next_packets = @binary[22..(22+sub_packet_length-1)]
+    while sub_packet_length != 0 && next_packets.length != 0
+      p_length = Packet.new(next_packets).length
+      packet = Packet.new(next_packets[0..(p_length-1)])
+      @packets << packet
+
+      next_packets = next_packets[p_length..-1]
     end
   end
 
   def length
-    if @type == :literal
+    if literal?
       @literal_length
     else
       length_extra = length_type_id == '0' ? 15 : 11
@@ -117,23 +126,33 @@ class Packet
     num
   end
 
+  def value
+    case type_id
+    when 0
+      packets.sum {|p| p.value }
+    when 1
+      packets.inject(1) {|acc, p| acc * p.value}
+    when 2
+      packets.map{|p| p.value}.min
+    when 3
+      packets.map{|p| p.value}.max
+    when 4
+      @literal.to_i(2)
+    when 5
+      packets[0].value > packets[1].value ? 1 : 0
+    when 6
+      packets[0].value < packets[1].value ? 1 : 0
+    when 7
+      packets[0].value == packets[1].value ? 1 : 0
+    end
+  end
+
   def version_sum
-    return @version if @type == :literal
+    return @version if literal?
     packets.sum {|packet| packet.version_sum} + @version
   end
 
-  def type(type_id)
-    return :literal if type_id == 4
-    :operator
+  def literal?
+    type_id == 4
   end
 end
-
-#100010100000000001001010100000000001101010000000000000101111010001111000
-#vers,typ,tid,count/length,    str
-# 4,  2,  1    1
-# 100,010,1,00000000001,001010100000000001101010000000000000101111010001111000
-#  1 , 2 ,1       1
-# 001,010,1,00000000001,101010000000000000101111010001111000
-#  5, 2  ,0,    11
-# 101,010,0,000000000001011,11010001111000
-  
