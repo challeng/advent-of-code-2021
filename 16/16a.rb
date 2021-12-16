@@ -70,6 +70,7 @@ class Packet
     else
       make_packets 
     end
+    @binary = binary[0..(length-1)]
   end
 
   def make_packets
@@ -84,12 +85,11 @@ class Packet
     num_sub_packets = @binary[7..17].to_i(2)
     next_packets = @binary[18..-1]
     while num_sub_packets != 0
-      p_length = Packet.new(next_packets).length
-      packet = Packet.new(next_packets[0..(p_length-1)])
+      packet = Packet.new(next_packets)
       @packets << packet
 
       num_sub_packets -= 1
-      next_packets = next_packets[p_length..-1]
+      next_packets = next_packets[packet.length..-1]
     end
   end
 
@@ -97,11 +97,10 @@ class Packet
     sub_packet_length = @binary[7..21].to_i(2)
     next_packets = @binary[22..(22+sub_packet_length-1)]
     while sub_packet_length != 0 && next_packets.length != 0
-      p_length = Packet.new(next_packets).length
-      packet = Packet.new(next_packets[0..(p_length-1)])
+      packet = Packet.new(next_packets)
       @packets << packet
 
-      next_packets = next_packets[p_length..-1]
+      next_packets = next_packets[packet.length..-1]
     end
   end
 

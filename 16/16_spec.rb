@@ -35,8 +35,8 @@ RSpec.describe 'Day 16' do
     expect(part_one('A0016C880162017C3686B18A3D4780')).to eq(31)
   end
 
-  xit 'works with main input for part 1' do
-    expect(part_one(main_file, file: true)).to eq(0)
+  it 'works with main input for part 1' do
+    expect(part_one(main_file, file: true)).to eq(999)
   end
 
   it 'works with the test input for part 2' do
@@ -71,7 +71,7 @@ RSpec.describe 'Day 16' do
     expect(part_two('9C0141080250320F1802104A08')).to eq(1)
   end
 
-  xit 'works with main input for part 2' do
+  it 'works with main input for part 2' do
     expect(part_two(main_file, file: true)).to eq(3408662834145)
   end
 end
